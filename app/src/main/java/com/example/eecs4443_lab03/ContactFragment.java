@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -53,13 +55,20 @@ public class ContactFragment extends Fragment implements ContactRecyclerViewAdap
 
     @Override
     public void onContactTap(ContactRepository.Contact item) {
-        // tap -> Navigate to detail screen
-        Toast.makeText(getContext(), "Tapped on: " + item.name, Toast.LENGTH_SHORT).show();
+        // Create a new instance of the details fragment
+        ContactDetailsFragment detailsFragment = ContactDetailsFragment.newInstance(item.id);
+
+        // Replace the current fragment with the details fragment
+        FragmentManager fragmentManager = getParentFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, detailsFragment);
+        fragmentTransaction.addToBackStack(null); // Add this transaction to the back stack
+        fragmentTransaction.commit();
     }
 
     @Override
     public void onContactLongPress(ContactRepository.Contact item) {
-        // long press -> Navigate to entry screen or show options
+        // TODO: Handle contact long press -> Navigate to entry screen or show options
         Toast.makeText(getContext(), "Long pressed on: " + item.name, Toast.LENGTH_SHORT).show();
     }
 }
