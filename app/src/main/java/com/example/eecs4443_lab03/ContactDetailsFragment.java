@@ -1,5 +1,7 @@
 package com.example.eecs4443_lab03;
 
+import static java.lang.String.format;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,16 +14,20 @@ import androidx.fragment.app.Fragment;
 
 import com.example.eecs4443_lab03.placeholder.ContactRepository;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+
 public class ContactDetailsFragment extends Fragment {
 
     private static final String ARG_CONTACT_ID = "contact_id";
 
-    private ContactRepository.Contact mContact;
+    private Contact mContact;
 
-    public static ContactDetailsFragment newInstance(String contactId) {
+    public static ContactDetailsFragment newInstance(int contactId) {
         ContactDetailsFragment fragment = new ContactDetailsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_CONTACT_ID, contactId);
+        args.putInt(ARG_CONTACT_ID, contactId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,12 +62,16 @@ public class ContactDetailsFragment extends Fragment {
             TextView dateAdded = view.findViewById(R.id.contact_date_added);
 
             // Set the text for each TextView
-            name.setText(mContact.name);
-            birthday.setText(mContact.birthday);
-            phoneNumber.setText(mContact.phoneNumber);
-            description.setText(mContact.description);
-            notes.setText(mContact.notes);
-            dateAdded.setText(mContact.dateAdded);
+            name.setText(mContact.getName());
+            birthday.setText(formateData(mContact.getBirthday()));
+            phoneNumber.setText(mContact.getPhoneNumber());
+            description.setText(mContact.getDescription());
+            notes.setText(mContact.getNotes());
+            dateAdded.setText(formateData(mContact.getDateAdded()));
         }
+    }
+    private String formateData(LocalDate date) {
+        if (date == null) return "";
+        return date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM));
     }
 }
