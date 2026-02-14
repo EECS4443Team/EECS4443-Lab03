@@ -1,40 +1,57 @@
 package com.example.eecs4443_lab03;
 
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.eecs4443_lab03.placeholder.ContactRepository.PlaceholderItem;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.eecs4443_lab03.databinding.FragmentContactBinding;
+import com.example.eecs4443_lab03.placeholder.ContactRepository.Contact;
 
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link PlaceholderItem}.
- * TODO: Replace the implementation with code for your data type.
- */
 public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecyclerViewAdapter.ViewHolder> {
 
-    private final List<PlaceholderItem> mValues;
+    private final List<Contact> mValues;
+    private final OnContactClickListener mListener;
 
-    public ContactRecyclerViewAdapter(List<PlaceholderItem> items) {
+    // Click Listener Interface
+    public interface OnContactClickListener {
+        void onContactTap(Contact item);
+        void onContactLongPress(Contact item);
+    }
+
+    public ContactRecyclerViewAdapter(List<Contact> items, OnContactClickListener listener) {
         mValues = items;
+        mListener = listener;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
         return new ViewHolder(FragmentContactBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
-
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+        holder.mIdView.setText(holder.mItem.id);
+        holder.mContentView.setText(holder.mItem.name);
+
+        // Set click listeners
+        holder.itemView.setOnClickListener(v -> {
+            if (mListener != null) {
+                mListener.onContactTap(holder.mItem);
+            }
+        });
+        holder.itemView.setOnLongClickListener(v -> {
+            if (mListener != null) {
+                mListener.onContactLongPress(holder.mItem);
+                return true; // Consume the long click
+            }
+            return false;
+        });
     }
 
     @Override
@@ -45,7 +62,7 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView mIdView;
         public final TextView mContentView;
-        public PlaceholderItem mItem;
+        public Contact mItem;
 
         public ViewHolder(FragmentContactBinding binding) {
             super(binding.getRoot());

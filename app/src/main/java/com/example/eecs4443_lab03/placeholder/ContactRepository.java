@@ -5,45 +5,37 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Helper class for providing sample content for user interfaces created by
- * Android template wizards.
- * <p>
- * TODO: Replace all uses of this class before publishing your app.
- */
 public class ContactRepository {
 
-    /**
-     * An array of sample (placeholder) items.
-     */
-    public static final List<PlaceholderItem> ITEMS = new ArrayList<PlaceholderItem>();
-
-    /**
-     * A map of sample (placeholder) items, by ID.
-     */
-    public static final Map<String, PlaceholderItem> ITEM_MAP = new HashMap<String, PlaceholderItem>();
+    public static final List<Contact> ITEMS = new ArrayList<>();
+    public static final Map<String, Contact> ITEM_MAP = new HashMap<>();
 
     private static final int COUNT = 25;
 
     static {
         // Add some sample items.
         for (int i = 1; i <= COUNT; i++) {
-            addItem(createPlaceholderItem(i));
+            addItem(createContact(i));
         }
     }
 
-    private static void addItem(PlaceholderItem item) {
+    private static void addItem(Contact item) {
         ITEMS.add(item);
         ITEM_MAP.put(item.id, item);
     }
 
-    private static PlaceholderItem createPlaceholderItem(int position) {
-        return new PlaceholderItem(String.valueOf(position), "Item " + position, makeDetails(position));
+    private static Contact createContact(int position) {
+        return new Contact(
+                String.valueOf(position),
+                "Contact " + position,
+                "555-01" + String.format("%02d", position), // Example phone number
+                "contact." + position + "@example.com", // Example email
+                makeDetails(position));
     }
 
     private static String makeDetails(int position) {
         StringBuilder builder = new StringBuilder();
-        builder.append("Details about Item: ").append(position);
+        builder.append("Details about Contact: ").append(position);
         for (int i = 0; i < position; i++) {
             builder.append("\nMore details information here.");
         }
@@ -51,22 +43,26 @@ public class ContactRepository {
     }
 
     /**
-     * A placeholder item representing a piece of content.
+     * A contact item representing a piece of content.
      */
-    public static class PlaceholderItem {
+    public static class Contact {
         public final String id;
-        public final String content;
+        public final String name;
+        public final String phoneNumber;
+        public final String email;
         public final String details;
 
-        public PlaceholderItem(String id, String content, String details) {
+        public Contact(String id, String name, String phoneNumber, String email, String details) {
             this.id = id;
-            this.content = content;
+            this.name = name;
+            this.phoneNumber = phoneNumber;
+            this.email = email;
             this.details = details;
         }
 
         @Override
         public String toString() {
-            return content;
+            return name;
         }
     }
 }
