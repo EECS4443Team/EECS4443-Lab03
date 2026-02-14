@@ -21,10 +21,12 @@ public class ContactDBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_BDAY = "birthday";
     public static final String COLUMN_DESC = "description";
     public static final String COLUMN_NOTES = "notes";
-
+    public static final String COLUMN_DATE_ADDED = "date_added";
     public ContactDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
+
+
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -34,7 +36,9 @@ public class ContactDBHelper extends SQLiteOpenHelper {
                 + COLUMN_PHONENumber + " TEXT,"
                 + COLUMN_BDAY + " TEXT,"
                 + COLUMN_DESC + " TEXT,"
-                + COLUMN_NOTES + " TEXT" + ")";
+                + COLUMN_NOTES + " TEXT,"
+                // This line automatically sets the date when a row is created
+                + COLUMN_DATE_ADDED + " TEXT DEFAULT (date('now'))" + ")";
         db.execSQL(CREATE_TABLE);
     }
 
@@ -65,13 +69,17 @@ public class ContactDBHelper extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             do {
+                // Get the date string from the database (index 6 based on the CREATE string above)
+                String dateString = cursor.getString(6);
+                LocalDate dateAdded = LocalDate.parse(dateString);
+
                 contactList.add(new Contact(
                         cursor.getString(1), // name
                         LocalDate.parse(cursor.getString(3)), // birthday
                         cursor.getString(2), // phone
                         cursor.getString(4), // description
                         cursor.getString(5), // notes
-                        LocalDate.now()      // dateOfAddition (simplified)
+                        dateAdded            // date of addition from DB
                 ));
             } while (cursor.moveToNext());
         }
