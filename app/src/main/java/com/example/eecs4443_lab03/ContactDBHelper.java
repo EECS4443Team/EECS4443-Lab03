@@ -78,4 +78,21 @@ public class ContactDBHelper extends SQLiteOpenHelper {
         cursor.close();
         return contactList;
     }
+
+    // Add these to your ContactDBHelper class
+    public int deleteContact(String name) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        // Returns the number of rows affected
+        return db.delete(TABLE_CONTACTS, COLUMN_NAME + " = ?", new String[]{name});
+    }
+
+    public int updateContact(Contact contact, String oldName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PHONENumber, contact.getPhoneNumber());
+        values.put(COLUMN_NOTES, contact.getNotes());
+        // Add other fields as needed...
+
+        return db.update(TABLE_CONTACTS, values, COLUMN_NAME + " = ?", new String[]{oldName});
+    }
 }

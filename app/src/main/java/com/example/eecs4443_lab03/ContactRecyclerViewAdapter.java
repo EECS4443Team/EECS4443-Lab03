@@ -58,4 +58,5 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
             return super.toString() + " '" + mContentView.getText() + "'";
         }
     }
+
 }
