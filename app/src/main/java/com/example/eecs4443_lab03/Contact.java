@@ -7,6 +7,7 @@ import java.time.LocalDate;
  */
 
 public class Contact {
+    private int contactID;
     private String name;
     private LocalDate birthday;
     private String phoneNumber;
@@ -15,6 +16,7 @@ public class Contact {
     private LocalDate dateOfAddition;
 
     public Contact(
+            int contactID,
             String name,
             LocalDate birthday,
             String phoneNumber,
@@ -22,12 +24,21 @@ public class Contact {
             String notes,
             LocalDate dateOfAddition
     ) {
+        this.contactID = contactID;
         this.name = name;
         this.birthday = birthday;
         this.phoneNumber = phoneNumber;
         this.description = description;
         this.notes = notes;
         this.dateOfAddition = dateOfAddition;
+    }
+
+    public int getContactID() {
+        return contactID;
+    }
+
+    public void setContactID(int contactID) {
+        this.contactID = contactID;
     }
 
     public LocalDate getBirthday() {
