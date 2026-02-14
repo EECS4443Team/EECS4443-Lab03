@@ -22,7 +22,7 @@ public class Contact {
             String phoneNumber,
             String description,
             String notes,
-            LocalDate dateOfAddition
+            LocalDate dateAdded
     ) {
         this.contactID = contactID;
         this.name = name;
