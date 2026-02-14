@@ -1,0 +1,28 @@
+Index: app/src/main/java/com/example/eecs4443_lab03/ContactRecyclerViewAdapter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.eecs4443_lab03;\r\n\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport android.view.LayoutInflater;\r\nimport android.view.ViewGroup;\r\nimport android.widget.TextView;\r\n\r\nimport com.example.eecs4443_lab03.placeholder.ContactRepository.PlaceholderItem;\r\nimport com.example.eecs4443_lab03.databinding.FragmentContactBinding;\r\n\r\nimport java.util.List;\r\n\r\n/**\r\n * {@link RecyclerView.Adapter} that can display a {@link PlaceholderItem}.\r\n * TODO: Replace the implementation with code for your data type.\r\n */\r\npublic class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecyclerViewAdapter.ViewHolder> {\r\n\r\n    private final List<PlaceholderItem> mValues;\r\n\r\n    public ContactRecyclerViewAdapter(List<PlaceholderItem> items) {\r\n        mValues = items;\r\n    }\r\n\r\n    @Override\r\n    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {\r\n\r\n        return new ViewHolder(FragmentContactBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));\r\n\r\n    }\r\n\r\n    @Override\r\n    public void onBindViewHolder(final ViewHolder holder, int position) {\r\n        holder.mItem = mValues.get(position);\r\n        holder.mIdView.setText(mValues.get(position).id);\r\n        holder.mContentView.setText(mValues.get(position).content);\r\n    }\r\n\r\n    @Override\r\n    public int getItemCount() {\r\n        return mValues.size();\r\n    }\r\n\r\n    public class ViewHolder extends RecyclerView.ViewHolder {\r\n        public final TextView mIdView;\r\n        public final TextView mContentView;\r\n        public PlaceholderItem mItem;\r\n\r\n        public ViewHolder(FragmentContactBinding binding) {\r\n            super(binding.getRoot());\r\n            mIdView = binding.itemNumber;\r\n            mContentView = binding.content;\r\n        }\r\n\r\n        @Override\r\n        public String toString() {\r\n            return super.toString() + \" '\" + mContentView.getText() + \"'\";\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/eecs4443_lab03/ContactRecyclerViewAdapter.java b/app/src/main/java/com/example/eecs4443_lab03/ContactRecyclerViewAdapter.java
+--- a/app/src/main/java/com/example/eecs4443_lab03/ContactRecyclerViewAdapter.java	(revision 44f30f38cfa8c201a324948b4f204865d9e148dd)
++++ b/app/src/main/java/com/example/eecs4443_lab03/ContactRecyclerViewAdapter.java	(date 1771089717204)
+@@ -13,7 +13,6 @@
+ 
+ /**
+  * {@link RecyclerView.Adapter} that can display a {@link PlaceholderItem}.
+- * TODO: Replace the implementation with code for your data type.
+  */
+ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecyclerViewAdapter.ViewHolder> {
+ 
+@@ -25,9 +24,7 @@
+ 
+     @Override
+     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+-
+         return new ViewHolder(FragmentContactBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+-
+     }
+ 
+     @Override
