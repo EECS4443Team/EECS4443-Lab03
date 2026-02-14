@@ -8,4 +8,9 @@
     <string name="contact_notes">NOTES</string>
     <string name="contact_date_added">DATE ADDED</string>
     <string name="contact_edit_button_text">Edit Contact</string>
+    <string name="add_new_contact">Add New Contact</string>
+    <string name="add_contact">Add Contact</string>
+    <string name="data_storage_method">Data Storage Method:</string>
+    <string name="shared_preferences">Shared Preferences</string>
+    <string name="sqlite">SQLite</string>
 </resources>
