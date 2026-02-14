@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.eecs4443_lab03.placeholder.ContactRepository;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
  * A fragment representing a list of Items.
@@ -48,6 +49,17 @@ public class ContactFragment extends Fragment implements ContactRecyclerViewAdap
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
             recyclerView.setAdapter(new ContactRecyclerViewAdapter(ContactRepository.ITEMS, this));
+        }
+
+        FloatingActionButton addButton = view.findViewById(R.id.floating_button_add);
+        if (addButton != null) {
+            addButton.setOnClickListener(v -> {
+                FragmentManager fragmentManager = getParentFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, new ContactAddFragment());
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+            });
         }
         return view;
     }
