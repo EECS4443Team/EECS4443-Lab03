@@ -13,7 +13,7 @@ public class Contact {
     private String phoneNumber;
     private String description;
     private String notes;
-    private LocalDate dateOfAddition;
+    private LocalDate dateAdded;
 
     public Contact(
             int contactID,
@@ -30,7 +30,7 @@ public class Contact {
         this.phoneNumber = phoneNumber;
         this.description = description;
         this.notes = notes;
-        this.dateOfAddition = dateOfAddition;
+        this.dateAdded = dateAdded;
     }
 
     public int getContactID() {
@@ -61,8 +61,8 @@ public class Contact {
         return notes;
     }
 
-    public LocalDate getDateOfAddition() {
-        return dateOfAddition;
+    public LocalDate getDateAdded() {
+        return dateAdded;
     }
 
     public void setName(String name) {
@@ -85,7 +85,7 @@ public class Contact {
         this.notes = notes;
     }
 
-    public void setDateOfAddition(LocalDate dateOfAddition) {
-        this.dateOfAddition = dateOfAddition;
+    public void setDateAdded(LocalDate dateAdded) {
+        this.dateAdded = dateAdded;
     }
 }
