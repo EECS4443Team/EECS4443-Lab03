@@ -46,6 +46,11 @@ public class ContactAddFragment extends Fragment {
         btnAdd = view.findViewById(R.id.button_add_contact);
 
         repository = ContactRepository.getInstance(requireContext());
+        if (repository.isUsingSQLite()) {
+            rgStorage.check(R.id.rbSQLite);
+        } else {
+            rgStorage.check(R.id.rbSharedPrefs);
+        }
 
         // Pop up DatePicker
         etBirthday.setOnClickListener(v -> showDatePicker());
@@ -77,6 +82,9 @@ public class ContactAddFragment extends Fragment {
     }
 
     private void attemptSaveContact() {
+        // Always use the currently selected radio option at save time
+        int checkedId = rgStorage.getCheckedRadioButtonId();
+        repository.setStorageMethod(checkedId == R.id.rbSQLite);
 
         String name = etName.getText().toString().trim();
         String phone = etPhone.getText().toString().trim();
@@ -85,28 +93,21 @@ public class ContactAddFragment extends Fragment {
         String notes = etNotes.getText().toString().trim();
 
         // validate inputs
-        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(phone) || TextUtils.isEmpty(bday)) {
+        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(phone)) {
             Toast.makeText(getContext(), "Please fill in all required fields.", Toast.LENGTH_SHORT).show();
             return;
         }
 
 
+        LocalDate birthday = TextUtils.isEmpty(bday) ? LocalDate.now() : LocalDate.parse(bday);
         Contact newContact = new Contact(
-                0, name, LocalDate.parse(bday), phone, desc, notes, LocalDate.now()
+                0, name, birthday, phone, desc, notes, LocalDate.now()
         );
 
         repository.addContact(newContact);
 
 
         Toast.makeText(getContext(), "Contact saved successfully!", Toast.LENGTH_LONG).show();
-        clearForm();
-    }
-
-    private void clearForm() {
-        etName.setText("");
-        etPhone.setText("");
-        etBirthday.setText("");
-        etDescription.setText("");
-        etNotes.setText("");
+        getParentFragmentManager().popBackStack();
     }
 }

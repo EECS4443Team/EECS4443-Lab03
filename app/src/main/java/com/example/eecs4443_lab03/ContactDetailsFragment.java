@@ -1,12 +1,12 @@
 package com.example.eecs4443_lab03;
 
-import static java.lang.String.format;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,6 +23,7 @@ public class ContactDetailsFragment extends Fragment {
     private static final String ARG_CONTACT_ID = "contact_id";
 
     private Contact mContact;
+    private Integer contactId;
 
     public static ContactDetailsFragment newInstance(int contactId) {
         ContactDetailsFragment fragment = new ContactDetailsFragment();
@@ -35,8 +36,9 @@ public class ContactDetailsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            String contactId = getArguments().getString(ARG_CONTACT_ID);
+        Bundle args = getArguments();
+        if (args != null && args.containsKey(ARG_CONTACT_ID)) {
+            contactId = args.getInt(ARG_CONTACT_ID);
             mContact = ContactRepository.ITEM_MAP.get(contactId);
         }
     }
@@ -52,23 +54,59 @@ public class ContactDetailsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if (mContact != null) {
-            // Find all the TextViews in the layout
-            TextView name = view.findViewById(R.id.contact_name);
-            TextView birthday = view.findViewById(R.id.contact_birthday);
-            TextView phoneNumber = view.findViewById(R.id.contact_phone_number);
-            TextView description = view.findViewById(R.id.contact_description);
-            TextView notes = view.findViewById(R.id.contact_notes);
-            TextView dateAdded = view.findViewById(R.id.contact_date_added);
+        Button editButton = view.findViewById(R.id.contact_button_edit);
+        Button deleteButton = view.findViewById(R.id.contact_button_delete);
+        ContactRepository repository = ContactRepository.getInstance(requireContext());
 
-            // Set the text for each TextView
-            name.setText(mContact.getName());
-            birthday.setText(formateData(mContact.getBirthday()));
-            phoneNumber.setText(mContact.getPhoneNumber());
-            description.setText(mContact.getDescription());
-            notes.setText(mContact.getNotes());
-            dateAdded.setText(formateData(mContact.getDateAdded()));
+        editButton.setOnClickListener(v -> {
+            if (contactId == null) return;
+            ContactEditFragment editFragment = ContactEditFragment.newInstance(contactId);
+            getParentFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, editFragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        deleteButton.setOnClickListener(v -> {
+            if (contactId == null) return;
+            repository.deleteContact(contactId);
+            Toast.makeText(getContext(), "Contact deleted", Toast.LENGTH_SHORT).show();
+            getParentFragmentManager().popBackStack();
+        });
+
+        bindContact(view);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ContactRepository repository = ContactRepository.getInstance(requireContext());
+        repository.refreshData();
+        if (contactId != null) {
+            mContact = ContactRepository.ITEM_MAP.get(contactId);
         }
+        View view = getView();
+        if (view != null) {
+            bindContact(view);
+        }
+    }
+
+    private void bindContact(@NonNull View view) {
+        if (mContact == null) return;
+        TextView name = view.findViewById(R.id.contact_name);
+        TextView birthday = view.findViewById(R.id.contact_birthday);
+        TextView phoneNumber = view.findViewById(R.id.contact_phone_number);
+        TextView description = view.findViewById(R.id.contact_description);
+        TextView notes = view.findViewById(R.id.contact_notes);
+        TextView dateAdded = view.findViewById(R.id.contact_date_added);
+
+        name.setText(mContact.getName());
+        birthday.setText(formateData(mContact.getBirthday()));
+        phoneNumber.setText(mContact.getPhoneNumber());
+        description.setText(mContact.getDescription());
+        notes.setText(mContact.getNotes());
+        dateAdded.setText(formateData(mContact.getDateAdded()));
     }
     private String formateData(LocalDate date) {
         if (date == null) return "";

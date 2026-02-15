@@ -42,6 +42,10 @@ public class ContactRepository {
         refreshData();
     }
 
+    public boolean isUsingSQLite() {
+        return useSQLite;
+    }
+
     public void refreshData() {
         ITEMS.clear();
         ITEM_MAP.clear();
@@ -118,6 +122,28 @@ public class ContactRepository {
         refreshData();
     }
 
+    public void editContact(Contact contact) {
+        if (useSQLite) {
+            android.util.Log.d("STORAGE_CHECK", "Update in SQLite: " + contact.getName());
+            dbHelper.updateContact(contact);
+        } else {
+            android.util.Log.d("STORAGE_CHECK", "Update in SharedPreferences: " + contact.getName());
+            updateSharedPrefsContact(contact);
+        }
+        refreshData();
+    }
+
+    public void deleteContact(int contactId) {
+        if (useSQLite) {
+            android.util.Log.d("STORAGE_CHECK", "Delete from SQLite: " + contactId);
+            dbHelper.deleteContact(contactId);
+        } else {
+            android.util.Log.d("STORAGE_CHECK", "Delete from SharedPreferences: " + contactId);
+            deleteFromSharedPrefs(contactId);
+        }
+        refreshData();
+    }
+
     //SharedPrefs Logics
     private void saveToSharedPrefs(Contact contact, int newId) {
         SharedPreferences.Editor editor = sharedPrefs.edit();
@@ -157,5 +183,55 @@ public class ContactRepository {
             ));
         }
         return list;
+    }
+
+    private void updateSharedPrefsContact(Contact contact) {
+        int count = sharedPrefs.getInt("contact_count", 0);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+
+        for (int i = 0; i < count; i++) {
+            String prefix = "contact_" + i + "_";
+            int id = sharedPrefs.getInt(prefix + "id", -1);
+            if (id == contact.getContactID()) {
+                editor.putString(prefix + "name", contact.getName());
+                editor.putString(prefix + "phone", contact.getPhoneNumber());
+                editor.putString(prefix + "bday", contact.getBirthday().toString());
+                editor.putString(prefix + "desc", contact.getDescription());
+                editor.putString(prefix + "notes", contact.getNotes());
+                editor.putString(prefix + "date", contact.getDateAdded().toString());
+                editor.apply();
+                return;
+            }
+        }
+    }
+
+    private void deleteFromSharedPrefs(int contactId) {
+        List<Contact> existing = getAllFromSharedPrefs();
+        List<Contact> kept = new ArrayList<>();
+
+        for (Contact contact : existing) {
+            if (contact.getContactID() != contactId) {
+                kept.add(contact);
+            }
+        }
+
+        int count = sharedPrefs.getInt("contact_count", 0);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        for (int i = 0; i < count; i++) {
+            String prefix = "contact_" + i + "_";
+            editor.remove(prefix + "id");
+            editor.remove(prefix + "name");
+            editor.remove(prefix + "phone");
+            editor.remove(prefix + "bday");
+            editor.remove(prefix + "desc");
+            editor.remove(prefix + "notes");
+            editor.remove(prefix + "date");
+        }
+        editor.putInt("contact_count", 0);
+        editor.apply();
+
+        for (Contact contact : kept) {
+            saveToSharedPrefs(contact, contact.getContactID());
+        }
     }
 }
