@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -26,7 +25,6 @@ public class ContactFragment extends Fragment implements ContactRecyclerViewAdap
 
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int mColumnCount = 1;
-    private RecyclerView recyclerView;
     private ContactRecyclerViewAdapter adapter;
     private ContactRepository repository;
 
@@ -55,7 +53,7 @@ public class ContactFragment extends Fragment implements ContactRecyclerViewAdap
         View view = inflater.inflate(R.layout.fragment_contact_list, container, false);
         repository = ContactRepository.getInstance(requireContext());
 
-        recyclerView = view.findViewById(R.id.list);
+        RecyclerView recyclerView = view.findViewById(R.id.list);
         if (recyclerView != null) {
             Context context = recyclerView.getContext();
             if (mColumnCount <= 1) {
@@ -111,7 +109,12 @@ public class ContactFragment extends Fragment implements ContactRecyclerViewAdap
 
     @Override
     public void onContactLongPress(Contact item) {
-        // TODO: Handle contact long press -> Navigate to entry screen or show options
-        Toast.makeText(getContext(), "Long pressed on: " + item.getName(), Toast.LENGTH_SHORT).show();
+        ContactEditFragment editFragment = ContactEditFragment.newInstance(item.getContactID());
+
+        getParentFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, editFragment)
+                .addToBackStack(null)
+                .commit();
     }
 }
