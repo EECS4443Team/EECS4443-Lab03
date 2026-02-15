@@ -91,34 +91,6 @@
             android:gravity="top"
             android:scrollbars="vertical" />
 
-        <!-- Data Storage Method Toggle -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/data_storage_method" />
-
-        <RadioGroup
-            android:id="@+id/add_toggle_options"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/rbSharedPrefs"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/shared_preferences"
-                android:checked="true" />
-
-            <RadioButton
-                android:id="@+id/rbSQLite"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:text="@string/sqlite" />
-        </RadioGroup>
-
         <Button
             android:id="@+id/button_add_contact"
             android:layout_width="match_parent"

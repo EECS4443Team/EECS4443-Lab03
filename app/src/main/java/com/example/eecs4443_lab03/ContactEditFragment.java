@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,7 +26,6 @@ public class ContactEditFragment extends Fragment {
     private EditText editBirthday;
     private EditText editDescription;
     private EditText editNotes;
-    private RadioGroup storageToggle;
     private Contact oldContact;
     private Integer contactId;
     private ContactRepository repository;
@@ -63,7 +61,6 @@ public class ContactEditFragment extends Fragment {
         editBirthday = view.findViewById(R.id.add_edit_text_birthday);
         editDescription = view.findViewById(R.id.add_edit_text_description);
         editNotes = view.findViewById(R.id.add_edit_text_notes);
-        storageToggle = view.findViewById(R.id.add_toggle_options);
         Button saveButton = view.findViewById(R.id.button_add_contact);
 
         repository = ContactRepository.getInstance(requireContext());
@@ -82,14 +79,6 @@ public class ContactEditFragment extends Fragment {
         editNotes.setText(oldContact.getNotes());
 
         editBirthday.setOnClickListener(v -> showDatePicker());
-        // Toggle storage method
-        storageToggle.setOnCheckedChangeListener((group, checkedId) -> {
-            boolean useSQLite = (checkedId == R.id.rbSQLite);
-            repository.setStorageMethod(useSQLite);
-            String mode = useSQLite ? "SQLite" : "SharedPreferences";
-            android.util.Log.d("STORAGE_CHECK", "UI toggled: " + (useSQLite ? "SQLite Mode" : "SharedPrefs Mode"));
-            Toast.makeText(getContext(), "Storage Mode: " + mode, Toast.LENGTH_SHORT).show();
-        });
         saveButton.setOnClickListener(v -> attemptEdit());
     }
 
