@@ -1,16 +1,112 @@
 package com.example.eecs4443_lab03;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioGroup;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.eecs4443_lab03.placeholder.ContactRepository;
+
+import java.time.LocalDate;
+import java.util.Calendar;
+
 public class ContactAddFragment extends Fragment {
+
+    private EditText etName, etPhone, etBirthday, etDescription, etNotes;
+    private RadioGroup rgStorage;
+    private Button btnAdd;
+    private ContactRepository repository;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_contact_add, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // init ui component
+        etName = view.findViewById(R.id.add_edit_text_name);
+        etPhone = view.findViewById(R.id.add_edit_text_phone);
+        etBirthday = view.findViewById(R.id.add_edit_text_birthday);
+        etDescription = view.findViewById(R.id.add_edit_text_description);
+        etNotes = view.findViewById(R.id.add_edit_text_notes);
+        rgStorage = view.findViewById(R.id.add_toggle_options);
+        btnAdd = view.findViewById(R.id.button_add_contact);
+
+        repository = ContactRepository.getInstance(requireContext());
+
+        // Pop up DatePicker
+        etBirthday.setOnClickListener(v -> showDatePicker());
+
+        // Toggle storage method
+        rgStorage.setOnCheckedChangeListener((group, checkedId) -> {
+            boolean useSQLite = (checkedId == R.id.rbSQLite);
+            repository.setStorageMethod(useSQLite);
+            String mode = useSQLite ? "SQLite" : "SharedPreferences";
+            android.util.Log.d("STORAGE_CHECK", "UI toggled: " + (useSQLite ? "SQLite Mode" : "SharedPrefs Mode"));
+            Toast.makeText(getContext(), "Storage Mode: " + mode, Toast.LENGTH_SHORT).show();
+        });
+
+        btnAdd.setOnClickListener(v -> attemptSaveContact());
+    }
+
+    private void showDatePicker() {
+        final Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),
+                (view, year1, monthOfYear, dayOfMonth) -> {
+                    String selectedDate = year1 + "-" + String.format("%02d", (monthOfYear + 1)) + "-" + String.format("%02d", dayOfMonth);
+                    etBirthday.setText(selectedDate);
+                }, year, month, day);
+        datePickerDialog.show();
+    }
+
+    private void attemptSaveContact() {
+
+        String name = etName.getText().toString().trim();
+        String phone = etPhone.getText().toString().trim();
+        String bday = etBirthday.getText().toString().trim();
+        String desc = etDescription.getText().toString().trim();
+        String notes = etNotes.getText().toString().trim();
+
+        // validate inputs
+        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(phone) || TextUtils.isEmpty(bday)) {
+            Toast.makeText(getContext(), "Please fill in all required fields.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+        Contact newContact = new Contact(
+                0, name, LocalDate.parse(bday), phone, desc, notes, LocalDate.now()
+        );
+
+        repository.addContact(newContact);
+
+
+        Toast.makeText(getContext(), "Contact saved successfully!", Toast.LENGTH_LONG).show();
+        clearForm();
+    }
+
+    private void clearForm() {
+        etName.setText("");
+        etPhone.setText("");
+        etBirthday.setText("");
+        etDescription.setText("");
+        etNotes.setText("");
     }
 }
