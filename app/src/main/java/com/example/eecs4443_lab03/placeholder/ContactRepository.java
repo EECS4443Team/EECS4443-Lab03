@@ -42,6 +42,10 @@ public class ContactRepository {
         refreshData();
     }
 
+    public boolean isUsingSQLite() {
+        return useSQLite;
+    }
+
     public void refreshData() {
         ITEMS.clear();
         ITEM_MAP.clear();
