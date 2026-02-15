@@ -118,6 +118,17 @@ public class ContactRepository {
         refreshData();
     }
 
+    public void editContact(Contact contact) {
+        if (useSQLite) {
+            android.util.Log.d("STORAGE_CHECK", "Update in SQLite: " + contact.getName());
+            dbHelper.updateContact(contact);
+        } else {
+            android.util.Log.d("STORAGE_CHECK", "Update in SharedPreferences: " + contact.getName());
+            updateSharedPrefsContact(contact);
+        }
+        refreshData();
+    }
+
     //SharedPrefs Logics
     private void saveToSharedPrefs(Contact contact, int newId) {
         SharedPreferences.Editor editor = sharedPrefs.edit();
@@ -157,5 +168,25 @@ public class ContactRepository {
             ));
         }
         return list;
+    }
+
+    private void updateSharedPrefsContact(Contact contact) {
+        int count = sharedPrefs.getInt("contact_count", 0);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+
+        for (int i = 0; i < count; i++) {
+            String prefix = "contact_" + i + "_";
+            int id = sharedPrefs.getInt(prefix + "id", -1);
+            if (id == contact.getContactID()) {
+                editor.putString(prefix + "name", contact.getName());
+                editor.putString(prefix + "phone", contact.getPhoneNumber());
+                editor.putString(prefix + "bday", contact.getBirthday().toString());
+                editor.putString(prefix + "desc", contact.getDescription());
+                editor.putString(prefix + "notes", contact.getNotes());
+                editor.putString(prefix + "date", contact.getDateAdded().toString());
+                editor.apply();
+                return;
+            }
+        }
     }
 }
