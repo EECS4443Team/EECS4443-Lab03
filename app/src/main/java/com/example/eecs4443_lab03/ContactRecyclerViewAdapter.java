@@ -1,14 +1,12 @@
 package com.example.eecs4443_lab03;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.eecs4443_lab03.databinding.FragmentContactBinding;
-import com.example.eecs4443_lab03.placeholder.ContactRepository.Contact;
 
 import java.util.List;
 
@@ -36,8 +34,8 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(holder.mItem.id);
-        holder.mContentView.setText(holder.mItem.name);
+        holder.mIdView.setText(String.valueOf(holder.mItem.getContactID()));
+        holder.mContentView.setText(holder.mItem.getName());
 
         // Set click listeners
         holder.itemView.setOnClickListener(v -> {

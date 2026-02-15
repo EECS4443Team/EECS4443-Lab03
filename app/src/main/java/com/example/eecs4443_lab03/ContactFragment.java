@@ -34,7 +34,21 @@ public class ContactFragment extends Fragment implements ContactRecyclerViewAdap
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Update the list, if edited
+        ContactRepository repository = ContactRepository.getInstance(getContext());
+        repository.refreshData();
 
+        // Notify the adapter that the data has changed
+        if (getView() instanceof RecyclerView) {
+            RecyclerView recyclerView = (RecyclerView) getView();
+            if (recyclerView.getAdapter() != null) {
+                recyclerView.getAdapter().notifyDataSetChanged();
+            }
+        }
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -65,9 +79,9 @@ public class ContactFragment extends Fragment implements ContactRecyclerViewAdap
     }
 
     @Override
-    public void onContactTap(ContactRepository.Contact item) {
+    public void onContactTap(Contact item) {
         // Create a new instance of the details fragment
-        ContactDetailsFragment detailsFragment = ContactDetailsFragment.newInstance(item.id);
+        ContactDetailsFragment detailsFragment = ContactDetailsFragment.newInstance(item.getContactID());
 
         // Replace the current fragment with the details fragment
         FragmentManager fragmentManager = getParentFragmentManager();
@@ -78,8 +92,8 @@ public class ContactFragment extends Fragment implements ContactRecyclerViewAdap
     }
 
     @Override
-    public void onContactLongPress(ContactRepository.Contact item) {
+    public void onContactLongPress(Contact item) {
         // TODO: Handle contact long press -> Navigate to entry screen or show options
-        Toast.makeText(getContext(), "Long pressed on: " + item.name, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Long pressed on: " + item.getName(), Toast.LENGTH_SHORT).show();
     }
 }

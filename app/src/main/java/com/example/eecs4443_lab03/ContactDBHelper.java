@@ -56,7 +56,11 @@ public class ContactDBHelper extends SQLiteOpenHelper {
         values.put(COLUMN_DESC, contact.getDescription());
         values.put(COLUMN_NOTES, contact.getNotes());
         // date_added is handled by DEFAULT (date('now'))
-
+        if (contact.getDateAdded() != null) {
+            values.put(COLUMN_DATE_ADDED, contact.getDateAdded().toString());
+        } else {
+            values.put(COLUMN_DATE_ADDED, LocalDate.now().toString());
+        }
         return db.insert(TABLE_CONTACTS, null, values);
     }
 
