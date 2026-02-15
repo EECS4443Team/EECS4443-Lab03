@@ -17,3 +17,12 @@ This repository is for EECS 4443 W2026 Lab 03 - Input Forms, Local Data Storage 
 ## Known Limitations
 * For error handling, once the pop-up is shown, the app does not go back to the main activity on its own. Going back to the main activity after the pop up appears or crashing the app could be a better solution/more graceful way to handle errors.
 * Every time the orientation changes on the Error Handling pop-up, it displays the pop-up view again.
+## Architecture
+This app follows the MVVM (Model-View-ViewModel) architectural pattern, leveraging Android Architecture Components.
+
+*   **Model**: The `Contact` class defines the data structure of the application.
+*   **View**: `Fragment`s (e.g., `ContactFragment`, `ContactDetailsFragment`) compose the UI and handle user input. They observe `LiveData` from the ViewModel to automatically update the UI upon data changes.
+*   **ViewModel**: `ContactViewModel` manages UI-related data and business logic. It's lifecycle-aware, preserving data across configuration changes like screen rotations.
+*   **Repository**: `ContactRepository` abstracts the data source, allowing the ViewModel to request data operations without direct knowledge of the underlying database (`ContactDBHelper`).
+
+This structure enhances testability and maintainability by clearly separating concerns.
