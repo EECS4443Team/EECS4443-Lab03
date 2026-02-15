@@ -25,7 +25,7 @@ public class ContactRepository {
         this.context = context.getApplicationContext();
         this.dbHelper = new ContactDBHelper(this.context);
         this.sharedPrefs = this.context.getSharedPreferences("ContactPrefs", Context.MODE_PRIVATE);
-        // update whe instantiation
+// update whe instantiation
         refreshData();
     }
 
@@ -38,39 +38,44 @@ public class ContactRepository {
 
     public void setStorageMethod(boolean useSQLite) {
         this.useSQLite = useSQLite;
-        Log.d("STORAGE_CHECK", "Storage method changed -> useSQLite: " + useSQLite);
-        // We refresh to ensure the UI stays updated even if the view logic changes
+        android.util.Log.d("STORAGE_CHECK", "useSQLite : " + useSQLite);
         refreshData();
     }
 
     public void refreshData() {
         ITEMS.clear();
         ITEM_MAP.clear();
-
-        // Fetch data from both sources to create a unified list
-        List<Contact> sqliteList = dbHelper.getAllContacts();
-        List<Contact> sharedList = getAllFromSharedPrefs();
-
-        // Combine both lists into the main ITEMS list
-        ITEMS.addAll(sqliteList);
-        ITEMS.addAll(sharedList);
-
-        // Map items by ID for easy access (e.g., for details view)
-        for (Contact c : ITEMS) {
-            ITEM_MAP.put(c.getContactID(), c);
+        List<Contact> list;
+        if (useSQLite) {
+            android.util.Log.d("STORAGE_CHECK", "Loading from SQLite");
+            list = dbHelper.getAllContacts();
+        } else {
+            android.util.Log.d("STORAGE_CHECK", "Loading from SharedPreferences ");
+            list = getAllFromSharedPrefs();
         }
 
-        // If no data exists anywhere, initialize with sample data
-        if (ITEMS.isEmpty()) {
+        if (list.isEmpty()) {
             initSampleData();
-            refreshData(); // Re-run to load the newly created sample data
+            // Re-fetch list after initializing sample data
+            list = useSQLite ? dbHelper.getAllContacts() : getAllFromSharedPrefs();
+        }
+
+        ITEMS.addAll(list);
+        for (Contact c : list) {
+            ITEM_MAP.put(c.getContactID(), c);
         }
     }
 
     private void initSampleData() {
-        // Initialize with a few samples to populate the UI initially
+        // Populate sample data into the CURRENTLY selected storage method
         for (int i = 1; i <= 5; i++) {
-            dbHelper.insertContact(createContact(i));
+            Contact sample = createContact(i);
+            if (useSQLite) {
+                dbHelper.insertContact(sample);
+            } else {
+                // For SharedPrefs sample, we still use the simple count-based ID
+                saveToSharedPrefs(sample, i);
+            }
         }
     }
 
@@ -89,31 +94,37 @@ public class ContactRepository {
 
     public void addContact(Contact contact) {
         if (useSQLite) {
-            Log.d("STORAGE_CHECK", "Attempting to save to SQLite: " + contact.getName());
+            android.util.Log.d("STORAGE_CHECK", "Store to SQLite: " + contact.getName());
             dbHelper.insertContact(contact);
         } else {
-            Log.d("STORAGE_CHECK", "Attempting to save to SharedPreferences: " + contact.getName());
+            android.util.Log.d("STORAGE_CHECK", "Store to SharedPreferences: " + contact.getName());
 
-            // Generate a unique ID by finding the maximum ID currently in the combined list
+            // Logic to prevent ID collisions across both storage sources
+            // We find the maximum ID currently stored in BOTH SQLite and SharedPreferences
+            List<Contact> allExisting = new ArrayList<>();
+            allExisting.addAll(dbHelper.getAllContacts());
+            allExisting.addAll(getAllFromSharedPrefs());
+
             int maxId = 0;
-            for (Contact c : ITEMS) {
+            for (Contact c : allExisting) {
                 if (c.getContactID() > maxId) {
                     maxId = c.getContactID();
                 }
             }
-            // Save with the next available ID to prevent collisions
+
+            // Assign the next available unique ID
             saveToSharedPrefs(contact, maxId + 1);
         }
         refreshData();
     }
 
-    // SharedPrefs Logics
+    //SharedPrefs Logics
     private void saveToSharedPrefs(Contact contact, int newId) {
         SharedPreferences.Editor editor = sharedPrefs.edit();
         int count = sharedPrefs.getInt("contact_count", 0);
         String prefix = "contact_" + count + "_";
 
-        // Use the calculated unique ID instead of the temporary 0 from the form
+        // Save the explicitly generated unique ID
         editor.putInt(prefix + "id", newId);
         editor.putString(prefix + "name", contact.getName());
         editor.putString(prefix + "phone", contact.getPhoneNumber());
