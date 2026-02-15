@@ -43,27 +43,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp" />
 
-        <!-- Birthday -->
-        <TextView
-            android:id="@+id/contact_label_birthday"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/contact_birthday"
-            android:textSize="12sp" />
-
-        <TextView
-            android:id="@+id/contact_birthday"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:textSize="16sp" />
-
-        <com.google.android.material.divider.MaterialDivider
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp" />
-
         <!-- Phone Number -->
         <TextView
             android:id="@+id/contact_label_phone_number"
@@ -75,6 +54,27 @@
 
         <TextView
             android:id="@+id/contact_phone_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textSize="16sp" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp" />
+
+        <!-- Birthday -->
+        <TextView
+            android:id="@+id/contact_label_birthday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/contact_birthday"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/contact_birthday"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"

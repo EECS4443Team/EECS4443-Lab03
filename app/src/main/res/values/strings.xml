@@ -4,6 +4,8 @@
     <string name="contact_name">NAME</string>
     <string name="contact_birthday">BIRTHDAY</string>
     <string name="contact_phone_number">PHONE NUMBER</string>
+    <string name="required_name">NAME (*)</string>
+    <string name="required_phone_number">PHONE NUMBER (*)</string>
     <string name="contact_description">DESCRIPTION</string>
     <string name="contact_notes">NOTES</string>
     <string name="contact_date_added">DATE ADDED</string>
