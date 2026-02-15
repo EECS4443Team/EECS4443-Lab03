@@ -62,6 +62,7 @@ public class ContactEditFragment extends Fragment {
         editBirthday = view.findViewById(R.id.add_edit_text_birthday);
         editDescription = view.findViewById(R.id.add_edit_text_description);
         editNotes = view.findViewById(R.id.add_edit_text_notes);
+        storageToggle = view.findViewById(R.id.add_toggle_options);
         Button saveButton = view.findViewById(R.id.button_add_contact);
 
         repository = ContactRepository.getInstance(requireContext());
