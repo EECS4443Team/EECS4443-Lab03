@@ -108,14 +108,6 @@ public class ContactAddFragment extends Fragment {
 
 
         Toast.makeText(getContext(), "Contact saved successfully!", Toast.LENGTH_LONG).show();
-        clearForm();
-    }
-
-    private void clearForm() {
-        etName.setText("");
-        etPhone.setText("");
-        etBirthday.setText("");
-        etDescription.setText("");
-        etNotes.setText("");
+        getParentFragmentManager().popBackStack();
     }
 }
