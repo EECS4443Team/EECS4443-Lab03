@@ -29,7 +29,7 @@ public class ContactEditFragment extends Fragment {
     private EditText editNotes;
     private RadioGroup storageToggle;
     private Contact oldContact;
-    private int contactId;
+    private Integer contactId;
     private ContactRepository repository;
 
     public static ContactEditFragment newInstance(int contactId) {
@@ -43,8 +43,9 @@ public class ContactEditFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            contactId = getArguments().getInt(ARG_CONTACT_ID, -1);
+        Bundle args = getArguments();
+        if (args != null && args.containsKey(ARG_CONTACT_ID)) {
+            contactId = args.getInt(ARG_CONTACT_ID);
         }
     }
 
@@ -130,14 +131,6 @@ public class ContactEditFragment extends Fragment {
 
         repository.editContact(updated);
         Toast.makeText(getContext(), "Contact updated", Toast.LENGTH_SHORT).show();
-        clearForm();
-    }
-
-    private void clearForm() {
-        editName.setText("");
-        editPhone.setText("");
-        editBirthday.setText("");
-        editDescription.setText("");
-        editNotes.setText("");
+        getParentFragmentManager().popBackStack();
     }
 }
