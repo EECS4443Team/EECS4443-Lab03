@@ -11,6 +11,8 @@
     <string name="add_new_contact">Add New Contact</string>
     <string name="add_contact">Add Contact</string>
     <string name="delete_contact">Delete Contact</string>
+    <string name="edit_existing_contact_label">Edit Existing Contact</string>
+    <string name="confirm_edit">Confirm Edit</string>
     <string name="data_storage_method">Data Storage Method:</string>
     <string name="shared_preferences">SharedPreferences</string>
     <string name="sqlite">SQLite</string>
