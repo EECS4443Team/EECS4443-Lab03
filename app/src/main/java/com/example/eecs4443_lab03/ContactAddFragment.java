@@ -46,6 +46,11 @@ public class ContactAddFragment extends Fragment {
         btnAdd = view.findViewById(R.id.button_add_contact);
 
         repository = ContactRepository.getInstance(requireContext());
+        if (repository.isUsingSQLite()) {
+            rgStorage.check(R.id.rbSQLite);
+        } else {
+            rgStorage.check(R.id.rbSharedPrefs);
+        }
 
         // Pop up DatePicker
         etBirthday.setOnClickListener(v -> showDatePicker());
@@ -77,6 +82,9 @@ public class ContactAddFragment extends Fragment {
     }
 
     private void attemptSaveContact() {
+        // Always use the currently selected radio option at save time
+        int checkedId = rgStorage.getCheckedRadioButtonId();
+        repository.setStorageMethod(checkedId == R.id.rbSQLite);
 
         String name = etName.getText().toString().trim();
         String phone = etPhone.getText().toString().trim();
