@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -54,6 +55,9 @@ public class ContactDetailsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Button editButton = view.findViewById(R.id.contact_button_edit);
+        Button deleteButton = view.findViewById(R.id.contact_button_delete);
+        ContactRepository repository = ContactRepository.getInstance(requireContext());
+
         editButton.setOnClickListener(v -> {
             if (contactId == null) return;
             ContactEditFragment editFragment = ContactEditFragment.newInstance(contactId);
@@ -62,6 +66,13 @@ public class ContactDetailsFragment extends Fragment {
                     .replace(R.id.fragment_container, editFragment)
                     .addToBackStack(null)
                     .commit();
+        });
+
+        deleteButton.setOnClickListener(v -> {
+            if (contactId == null) return;
+            repository.deleteContact(contactId);
+            Toast.makeText(getContext(), "Contact deleted", Toast.LENGTH_SHORT).show();
+            getParentFragmentManager().popBackStack();
         });
 
         bindContact(view);
