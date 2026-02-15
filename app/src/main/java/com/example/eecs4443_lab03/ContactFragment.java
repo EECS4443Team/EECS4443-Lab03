@@ -1,120 +1,70 @@
 package com.example.eecs4443_lab03;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.eecs4443_lab03.placeholder.ContactRepository;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import java.util.ArrayList;
 
-/**
- * A fragment representing a list of Items.
- */
 public class ContactFragment extends Fragment implements ContactRecyclerViewAdapter.OnContactClickListener {
-
-    private static final String ARG_COLUMN_COUNT = "column-count";
-    private int mColumnCount = 1;
+    private ContactViewModel viewModel;
     private ContactRecyclerViewAdapter adapter;
-    private ContactRepository repository;
-
-    public ContactFragment() { }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-        }
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_contact_list, container, false);
     }
+
     @Override
-    public void onResume() {
-        super.onResume();
-        // Update the list when returning from details/edit/add
-        repository = ContactRepository.getInstance(requireContext());
-        repository.refreshData();
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
-        }
-    }
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_contact_list, container, false);
-        repository = ContactRepository.getInstance(requireContext());
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        viewModel = new ViewModelProvider(requireActivity()).get(ContactViewModel.class);
 
         RecyclerView recyclerView = view.findViewById(R.id.list);
-        if (recyclerView != null) {
-            Context context = recyclerView.getContext();
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            adapter = new ContactRecyclerViewAdapter(ContactRepository.ITEMS, this);
-            recyclerView.setAdapter(adapter);
-        }
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new ContactRecyclerViewAdapter(new ArrayList<>(), this);
+        recyclerView.setAdapter(adapter);
+
+        viewModel.contacts.observe(getViewLifecycleOwner(), items -> adapter.updateItems(items));
 
         RadioGroup storageToggle = view.findViewById(R.id.list_toggle_options);
-        RadioButton toggleSharedPrefs = view.findViewById(R.id.list_rb_shared_prefs);
-        RadioButton toggleSQLite = view.findViewById(R.id.list_rb_sqlite);
-        if (repository.isUsingSQLite()) {
-            toggleSQLite.setChecked(true);
-        } else {
-            toggleSharedPrefs.setChecked(true);
-        }
-        storageToggle.setOnCheckedChangeListener((group, checkedId) -> {
-            boolean useSQLite = checkedId == R.id.list_rb_sqlite;
-            repository.setStorageMethod(useSQLite);
-            if (adapter != null) {
-                adapter.notifyDataSetChanged();
-            }
+        RadioButton rbSqlite = view.findViewById(R.id.list_rb_sqlite);
+        RadioButton rbPrefs = view.findViewById(R.id.list_rb_shared_prefs);
+
+        viewModel.isSQLiteMode.observe(getViewLifecycleOwner(), isSQLite -> {
+            if (isSQLite) rbSqlite.setChecked(true);
+            else rbPrefs.setChecked(true);
         });
 
+        storageToggle.setOnCheckedChangeListener((group, checkedId) ->
+                viewModel.setStorageMethod(checkedId == R.id.list_rb_sqlite));
+
         FloatingActionButton addButton = view.findViewById(R.id.floating_button_add);
-        if (addButton != null) {
-            addButton.setOnClickListener(v -> {
-                FragmentManager fragmentManager = getParentFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.fragment_container, new ContactAddFragment());
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-            });
-        }
-        return view;
+        addButton.setOnClickListener(v -> navigateTo(new ContactAddFragment()));
+    }
+
+    private void navigateTo(Fragment fragment) {
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null).commit();
     }
 
     @Override
     public void onContactTap(Contact item) {
-        // Create a new instance of the details fragment
-        ContactDetailsFragment detailsFragment = ContactDetailsFragment.newInstance(item.getContactID());
-
-        // Replace the current fragment with the details fragment
-        FragmentManager fragmentManager = getParentFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, detailsFragment);
-        fragmentTransaction.addToBackStack(null); // Add this transaction to the back stack
-        fragmentTransaction.commit();
+        navigateTo(ContactDetailsFragment.newInstance(item.getContactID()));
     }
 
     @Override
     public void onContactLongPress(Contact item) {
-        ContactEditFragment editFragment = ContactEditFragment.newInstance(item.getContactID());
-
-        getParentFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, editFragment)
-                .addToBackStack(null)
-                .commit();
+        navigateTo(ContactEditFragment.newInstance(item.getContactID()));
     }
 }
