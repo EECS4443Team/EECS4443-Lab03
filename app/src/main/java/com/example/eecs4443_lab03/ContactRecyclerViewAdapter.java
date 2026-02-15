@@ -3,19 +3,16 @@ package com.example.eecs4443_lab03;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.eecs4443_lab03.databinding.FragmentContactBinding;
-
 import java.util.List;
 
 public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Contact> mValues;
+    private List<Contact> mValues;
     private final OnContactClickListener mListener;
 
-    // Click Listener Interface
     public interface OnContactClickListener {
         void onContactTap(Contact item);
         void onContactLongPress(Contact item);
@@ -26,8 +23,14 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
         mListener = listener;
     }
 
+    public void updateItems(List<Contact> newItems) {
+        this.mValues = newItems;
+        notifyDataSetChanged();
+    }
+
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new ViewHolder(FragmentContactBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
     }
 
@@ -37,7 +40,6 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
         holder.mIdView.setText(holder.mItem.getName());
         holder.mContentView.setText(holder.mItem.getPhoneNumber());
 
-        // Set click listeners
         holder.itemView.setOnClickListener(v -> {
             if (mListener != null) {
                 mListener.onContactTap(holder.mItem);
@@ -53,25 +55,17 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
     }
 
     @Override
-    public int getItemCount() {
-        return mValues.size();
-    }
+    public int getItemCount() { return mValues.size(); }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView mIdView;
         public final TextView mContentView;
         public Contact mItem;
 
         public ViewHolder(FragmentContactBinding binding) {
             super(binding.getRoot());
-            // Links to name and phone number for each contact row in list
             mIdView = binding.listContactName;
             mContentView = binding.listContactPhone;
-        }
-
-        @Override
-        public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
         }
     }
 }

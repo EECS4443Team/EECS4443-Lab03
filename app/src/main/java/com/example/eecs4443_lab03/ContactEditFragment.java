@@ -13,8 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import com.example.eecs4443_lab03.placeholder.ContactRepository;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.time.LocalDate;
 import java.util.Calendar;
@@ -28,8 +27,7 @@ public class ContactEditFragment extends Fragment {
     private EditText editNotes;
     private Contact oldContact;
     private Integer contactId;
-    private ContactRepository repository;
-
+    private ContactViewModel viewModel;
     public static ContactEditFragment newInstance(int contactId) {
         ContactEditFragment fragment = new ContactEditFragment();
         Bundle args = new Bundle();
@@ -63,14 +61,16 @@ public class ContactEditFragment extends Fragment {
         editNotes = view.findViewById(R.id.add_edit_text_notes);
         Button saveButton = view.findViewById(R.id.button_add_contact);
 
-        repository = ContactRepository.getInstance(requireContext());
-        repository.refreshData();
-        oldContact = ContactRepository.ITEM_MAP.get(contactId);
+        // Load stored data
+        viewModel = new ViewModelProvider(requireActivity()).get(ContactViewModel.class);
+        oldContact = viewModel.getContactById(contactId);
 
         if (oldContact == null) {
             Toast.makeText(getContext(), "Contact not found", Toast.LENGTH_SHORT).show();
+            getParentFragmentManager().popBackStack();
             return;
         }
+
 
         editName.setText(oldContact.getName());
         editPhone.setText(oldContact.getPhoneNumber());
@@ -79,7 +79,33 @@ public class ContactEditFragment extends Fragment {
         editNotes.setText(oldContact.getNotes());
 
         editBirthday.setOnClickListener(v -> showDatePicker());
-        saveButton.setOnClickListener(v -> attemptEdit());
+
+
+        saveButton.setOnClickListener(v -> {
+            String name = editName.getText().toString().trim();
+            String phone = editPhone.getText().toString().trim();
+            String bday = editBirthday.getText().toString().trim();
+            String desc = editDescription.getText().toString().trim();
+            String notes = editNotes.getText().toString().trim();
+
+            //validation
+            if (TextUtils.isEmpty(name) || TextUtils.isEmpty(phone) || TextUtils.isEmpty(bday)) {
+                Toast.makeText(getContext(), "Please fill required fields", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            try {
+                Contact updated = new Contact(
+                        contactId, name, LocalDate.parse(bday), phone, desc, notes, oldContact.getDateAdded()
+                );
+
+                viewModel.editContact(updated);
+                Toast.makeText(getContext(), "Contact updated", Toast.LENGTH_SHORT).show();
+                getParentFragmentManager().popBackStack();
+
+            } catch (Exception e) {
+                Toast.makeText(getContext(), "Invalid date format", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void showDatePicker() {
@@ -96,30 +122,4 @@ public class ContactEditFragment extends Fragment {
         datePickerDialog.show();
     }
 
-    private void attemptEdit() {
-        String name = editName.getText().toString().trim();
-        String phone = editPhone.getText().toString().trim();
-        String bday = editBirthday.getText().toString().trim();
-        String desc = editDescription.getText().toString().trim();
-        String notes = editNotes.getText().toString().trim();
-
-        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(phone) || TextUtils.isEmpty(bday)) {
-            Toast.makeText(getContext(), "Please fill required fields", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Contact updated = new Contact(
-                contactId,
-                name,
-                LocalDate.parse(bday),
-                phone,
-                desc,
-                notes,
-                oldContact.getDateAdded()
-        );
-
-        repository.editContact(updated);
-        Toast.makeText(getContext(), "Contact updated", Toast.LENGTH_SHORT).show();
-        getParentFragmentManager().popBackStack();
-    }
 }
