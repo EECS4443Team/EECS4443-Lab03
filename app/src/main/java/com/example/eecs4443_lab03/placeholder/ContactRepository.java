@@ -1,6 +1,8 @@
 package com.example.eecs4443_lab03.placeholder;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.example.eecs4443_lab03.Contact;
 import com.example.eecs4443_lab03.ContactDBHelper;
 import java.time.LocalDate;
@@ -13,12 +15,15 @@ public class ContactRepository {
     private static ContactRepository instance;
     public static final List<Contact> ITEMS = new ArrayList<>();
     public static final Map<Integer, Contact> ITEM_MAP = new HashMap<>();
-
+    private final Context context;
+    private final SharedPreferences sharedPrefs;
+    private boolean useSQLite = true;
     private final ContactDBHelper dbHelper;
 
     public ContactRepository(Context context) {
-        this.dbHelper = new ContactDBHelper(context.getApplicationContext());
-
+        this.context = context.getApplicationContext();
+        this.dbHelper = new ContactDBHelper(this.context);
+        this.sharedPrefs = this.context.getSharedPreferences("ContactPrefs", Context.MODE_PRIVATE);
         // update whe instantiation
         refreshData();
     }
@@ -28,18 +33,26 @@ public class ContactRepository {
         }
         return instance;
     }
+    public void setStorageMethod(boolean useSQLite) {
+        this.useSQLite = useSQLite;
+        refreshData();
+    }
     public void refreshData() {
         ITEMS.clear();
         ITEM_MAP.clear();
-        List<Contact> dbList = dbHelper.getAllContacts();
-
-        if (dbList.isEmpty()) {
+        List<Contact> list;
+        if (useSQLite) {
+            list = dbHelper.getAllContacts();
+        } else {
+            list = getAllFromSharedPrefs();
+        }
+        if (list.isEmpty()) {
             initSampleData();
-            dbList = dbHelper.getAllContacts();
+            list = useSQLite ? dbHelper.getAllContacts() : getAllFromSharedPrefs();
         }
 
-        ITEMS.addAll(dbList);
-        for (Contact c : dbList) {
+        ITEMS.addAll(list);
+        for (Contact c : list) {
             ITEM_MAP.put(c.getContactID(), c);
         }
     }
@@ -64,7 +77,51 @@ public class ContactRepository {
     }
 
     public void addContact(Contact contact) {
-        dbHelper.insertContact(contact);
+        if (useSQLite) {
+            dbHelper.insertContact(contact);
+        } else {
+            saveToSharedPrefs(contact);
+        }
         refreshData();
+    }
+
+    //SharedPrefs Logics
+    private void saveToSharedPrefs(Contact contact) {
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        int count = sharedPrefs.getInt("contact_count", 0);
+        String prefix = "contact_" + count + "_";
+
+        editor.putInt(prefix + "id", contact.getContactID());
+        editor.putString(prefix + "name", contact.getName());
+        editor.putString(prefix + "phone", contact.getPhoneNumber());
+        editor.putString(prefix + "bday", contact.getBirthday().toString());
+        editor.putString(prefix + "desc", contact.getDescription());
+        editor.putString(prefix + "notes", contact.getNotes());
+        editor.putString(prefix + "date", contact.getDateAdded().toString());
+
+        editor.putInt("contact_count", count + 1);
+        editor.apply();
+    }
+
+    private List<Contact> getAllFromSharedPrefs() {
+        List<Contact> list = new ArrayList<>();
+        int count = sharedPrefs.getInt("contact_count", 0);
+
+        for (int i = 0; i < count; i++) {
+            String prefix = "contact_" + i + "_";
+            int id = sharedPrefs.getInt(prefix + "id", -1);
+            if (id == -1) continue;
+
+            list.add(new Contact(
+                    id,
+                    sharedPrefs.getString(prefix + "name", ""),
+                    LocalDate.parse(sharedPrefs.getString(prefix + "bday", "2000-01-01")),
+                    sharedPrefs.getString(prefix + "phone", ""),
+                    sharedPrefs.getString(prefix + "desc", ""),
+                    sharedPrefs.getString(prefix + "notes", ""),
+                    LocalDate.parse(sharedPrefs.getString(prefix + "date", LocalDate.now().toString()))
+            ));
+        }
+        return list;
     }
 }
