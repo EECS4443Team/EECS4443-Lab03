@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.eecs4443_lab03.placeholder.ContactRepository;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
  * A fragment representing a list of Items.
@@ -39,16 +40,26 @@ public class ContactFragment extends Fragment implements ContactRecyclerViewAdap
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_contact_list, container, false);
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+        RecyclerView recyclerView = view.findViewById(R.id.list);
+        if (recyclerView != null) {
+            Context context = recyclerView.getContext();
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
             recyclerView.setAdapter(new ContactRecyclerViewAdapter(ContactRepository.ITEMS, this));
+        }
+
+        FloatingActionButton addButton = view.findViewById(R.id.floating_button_add);
+        if (addButton != null) {
+            addButton.setOnClickListener(v -> {
+                FragmentManager fragmentManager = getParentFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, new ContactAddFragment());
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+            });
         }
         return view;
     }

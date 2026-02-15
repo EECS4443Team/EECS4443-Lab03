@@ -66,8 +66,9 @@ public class ContactRecyclerViewAdapter extends RecyclerView.Adapter<ContactRecy
 
         public ViewHolder(FragmentContactBinding binding) {
             super(binding.getRoot());
-            mIdView = binding.itemNumber;
-            mContentView = binding.content;
+            // Links to name and phone number for each contact row in list
+            mIdView = binding.listContactName;
+            mContentView = binding.listContactPhone;
         }
 
         @Override
