@@ -172,15 +172,33 @@ public class ContactRepository {
             int id = sharedPrefs.getInt(prefix + "id", -1);
             if (id == -1) continue;
 
-            list.add(new Contact(
-                    id,
-                    sharedPrefs.getString(prefix + "name", ""),
-                    LocalDate.parse(sharedPrefs.getString(prefix + "bday", "2000-01-01")),
-                    sharedPrefs.getString(prefix + "phone", ""),
-                    sharedPrefs.getString(prefix + "desc", ""),
-                    sharedPrefs.getString(prefix + "notes", ""),
-                    LocalDate.parse(sharedPrefs.getString(prefix + "date", LocalDate.now().toString()))
-            ));
+            String name = sharedPrefs.getString(prefix + "name", "");
+            String phone = sharedPrefs.getString(prefix + "phone", "");
+            String bdayStr = sharedPrefs.getString(prefix + "bday", "");
+            String desc = sharedPrefs.getString(prefix + "desc", "");
+            String notes = sharedPrefs.getString(prefix + "notes", "");
+            String dateStr = sharedPrefs.getString(prefix + "date", LocalDate.now().toString());
+
+            if (name == null || name.trim().isEmpty()) continue;
+            if (phone == null || phone.trim().isEmpty()) continue;
+            if (bdayStr == null || bdayStr.trim().isEmpty()) continue;
+
+            try {
+                LocalDate bday = LocalDate.parse(bdayStr);
+                LocalDate dateAdded = LocalDate.parse(dateStr);
+
+                list.add(new Contact(
+                        id,
+                        name,
+                        bday,
+                        phone,
+                        desc == null ? "" : desc,
+                        notes == null ? "" : notes,
+                        dateAdded
+                ));
+            } catch (Exception e) {
+                Log.d("SharedPrefs", "Skipping invalid contact at index " + i);
+            }
         }
         return list;
     }
