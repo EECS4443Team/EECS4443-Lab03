@@ -10,7 +10,7 @@ This repository is for EECS 4443 W2026 Lab 03 - Input Forms, Local Data Storage 
 ## Team Contributions
 | Team Member        | Contributions | 
 |--------------------|------------------|
-| **Jorel Louie Chim** | Data Model, Contact Row UI, Add Contact UI  |
+| **Jorel Louie Chim** | Data Model, Contact Row UI, Add Contact UI, Edit Contact UI  |
 | **Shivraj Banwait** | Edit Contact UI, Data Model, Data Storage (SQLite) |
 | **Chan Woo Hwang** | Main Activity UI, Gesture Handling, Data Storage (SharedPreferences), MVVM Refactoring, Backend | 
 | **Asif Javed** | Error Handling, Comments, Validation | 
