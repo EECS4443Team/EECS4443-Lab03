@@ -14,8 +14,7 @@ This repository is for EECS 4443 W2026 Lab 03 - Input Forms, Local Data Storage 
 | **Shivraj Banwait** | Edit Contact UI, Data Model, Data Storage (SQLite) |
 | **Chan Woo Hwang** | Main Activity UI, Gesture Handling, Data Storage (SharedPreferences), MVVM Refactoring, Backend | 
 | **Asif Javed** | Error Handling, Comments, Validation | 
-## Known Limitations
-* 
+
 ## Architecture
 This app follows the MVVM (Model-View-ViewModel) architectural pattern, leveraging Android Architecture Components.
 
