@@ -10,13 +10,12 @@ This repository is for EECS 4443 W2026 Lab 03 - Input Forms, Local Data Storage 
 ## Team Contributions
 | Team Member        | Contributions | 
 |--------------------|------------------|
-| **Jorel Louie Chim** | Main Activity UI, Detail Activity UI, List Items UI, Comments  |
-| **Shivraj Banwait** | Main Activity UI, List Items UI, Error Handling|
-| **Chan Woo Hwang** | Main Activity UI, Detail Activity UI, List Items UI, Backend Logic | 
-| **Asif Javed** | Main Activity UI, Detail Activity UI, Comments | 
+| **Jorel Louie Chim** | Data Model, Contact Row UI, Add Contact UI  |
+| **Shivraj Banwait** | Edit Contact UI, Data Model, Data Storage (SQLite) |
+| **Chan Woo Hwang** | Main Activity UI, Gesture Handling, Data Storage (SharedPreferences), MVVM Refactoring, Backend | 
+| **Asif Javed** | Error Handling, Comments, Validation | 
 ## Known Limitations
-* For error handling, once the pop-up is shown, the app does not go back to the main activity on its own. Going back to the main activity after the pop up appears or crashing the app could be a better solution/more graceful way to handle errors.
-* Every time the orientation changes on the Error Handling pop-up, it displays the pop-up view again.
+* 
 ## Architecture
 This app follows the MVVM (Model-View-ViewModel) architectural pattern, leveraging Android Architecture Components.
 
