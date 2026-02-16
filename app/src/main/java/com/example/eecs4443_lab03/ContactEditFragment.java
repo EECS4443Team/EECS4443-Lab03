@@ -93,6 +93,10 @@ public class ContactEditFragment extends Fragment {
                 Toast.makeText(getContext(), "Please fill required fields", Toast.LENGTH_SHORT).show();
                 return;
             }
+            if (TextUtils.isEmpty(name) || TextUtils.isEmpty(phone) || TextUtils.isEmpty(bday)) {
+                Toast.makeText(getContext(), "Please fill required fields", Toast.LENGTH_SHORT).show();
+                return;
+            }
             try {
                 Contact updated = new Contact(
                         contactId, name, LocalDate.parse(bday), phone, desc, notes, oldContact.getDateAdded()
@@ -103,6 +107,8 @@ public class ContactEditFragment extends Fragment {
                 getParentFragmentManager().popBackStack();
 
             } catch (Exception e) {
+                editBirthday.setError("Use YYYY-MM-DD");
+                editBirthday.requestFocus();
                 Toast.makeText(getContext(), "Invalid date format", Toast.LENGTH_SHORT).show();
             }
         });

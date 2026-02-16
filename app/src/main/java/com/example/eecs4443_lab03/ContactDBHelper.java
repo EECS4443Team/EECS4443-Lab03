@@ -81,15 +81,18 @@ public class ContactDBHelper extends SQLiteOpenHelper {
                 String notes = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NOTES));
                 String dateAddedStr = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DATE_ADDED));
 
-                contactList.add(new Contact(
-                        id,
-                        name,
-                        LocalDate.parse(bdayStr),
-                        phone,
-                        desc,
-                        notes,
-                        LocalDate.parse(dateAddedStr)
-                ));
+                try {
+                    contactList.add(new Contact(
+                            id,
+                            name,
+                            LocalDate.parse(bdayStr),
+                            phone,
+                            desc,
+                            notes,
+                            LocalDate.parse(dateAddedStr)
+                    ));
+                } catch (Exception e) {
+                }
             } while (cursor.moveToNext());
         }
         cursor.close();

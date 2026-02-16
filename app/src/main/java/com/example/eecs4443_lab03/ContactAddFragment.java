@@ -75,12 +75,31 @@ public class ContactAddFragment extends Fragment {
         String notes = etNotes.getText().toString().trim();
 
 
-        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(phone)) {
-            Toast.makeText(getContext(), "Please fill in all required fields.", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(name)) {
+            etName.setError("Name is required");
+            etName.requestFocus();
             return;
         }
+        if (TextUtils.isEmpty(phone)) {
+            etPhone.setError("Phone number is required");
+            etPhone.requestFocus();
+            return;
+        }
+        if (TextUtils.isEmpty(bday)) {
+            etBirthday.setError("Birthday is required");
+            etBirthday.requestFocus();
+            return;
+        }
+
+        String phoneDigits = phone.replaceAll("\\D", "");
+        if (phoneDigits.length() < 7) {
+            etPhone.setError("Enter a valid phone number");
+            etPhone.requestFocus();
+            return;
+        }
+
         try {
-            LocalDate birthday = TextUtils.isEmpty(bday) ? LocalDate.now() : LocalDate.parse(bday);
+            LocalDate birthday = LocalDate.parse(bday);
             Contact newContact = new Contact(
                     0,
                     name,
@@ -97,6 +116,8 @@ public class ContactAddFragment extends Fragment {
             getParentFragmentManager().popBackStack(); // get back to list
 
         } catch (Exception e) {
+            etBirthday.setError("Use YYYY-MM-DD");
+            etBirthday.requestFocus();
             Toast.makeText(getContext(), "Invalid date format. Please use YYYY-MM-DD", Toast.LENGTH_SHORT).show();
         }
     }
